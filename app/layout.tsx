@@ -9,9 +9,9 @@ export const metadata: Metadata = {
   description: "Apply for the Director of Business Development position at Nabat AI. Nabat is building the operating system for nature — an AI-powered platform helping organizations assess, restore, monitor, and verify critical ecosystems at scale.",
   keywords: "Nabat AI, Business Development, Director, Abu Dhabi, UAE, Climate Technology, AI, Environmental Technology, Jobs, Careers",
   icons: {
-    icon: "/nabat.jpeg",
-    shortcut: "/nabat.jpeg",
-    apple: "/nabat.jpeg",
+    icon: "/title.png",
+    shortcut: "/title.png",
+    apple: "/title.png",
   },
   openGraph: {
     title: "Director of Business Development - Nabat AI",
