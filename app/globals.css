@@ -13,7 +13,7 @@
   }
 
   * {
-    @apply border-nabat-neutral-200;
+    border-color: rgb(228 233 231);
   }
 
   body {
