@@ -1,0 +1,108 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    
+    function isValidEmail(email) {
+      return email.matches('^[^@]+@[^@]+\\.[^@]+$');
+    }
+    
+    // Applications collection
+    match /applications/{applicationId} {
+      // Allow anyone to create an application (public form submission)
+      allow create: if request.resource.data.keys().hasAll([
+        'applicationNumber',
+        'position',
+        'status',
+        'submittedAt',
+        'data'
+      ]) &&
+      request.resource.data.status == 'new' &&
+      request.resource.data.position == 'Director of Business Development' &&
+      isValidEmail(request.resource.data.data.personalInformation.email);
+      
+      // Only admins can read applications
+      allow read: if isAdmin();
+      
+      // Only admins can update applications (status, notes, tags)
+      allow update: if isAdmin() && 
+        // Ensure critical fields are not modified
+        request.resource.data.applicationNumber == resource.data.applicationNumber &&
+        request.resource.data.submittedAt == resource.data.submittedAt &&
+        request.resource.data.position == resource.data.position;
+      
+      // No one can delete applications (data retention)
+      allow delete: if false;
+    }
+    
+    // Application documents (files metadata)
+    match /applications/{applicationId}/documents/{documentId} {
+      // Allow creation only with the application
+      allow create: if request.resource.data.keys().hasAll([
+        'fileName',
+        'fileType',
+        'fileSize',
+        'uploadedAt',
+        'storageRef'
+      ]) &&
+      request.resource.data.fileSize <= 15728640; // 15MB max
+      
+      // Only admins can read document metadata
+      allow read: if isAdmin();
+      
+      // No updates or deletes
+      allow update, delete: if false;
+    }
+    
+    // Admins collection (for authentication)
+    match /admins/{adminId} {
+      // Only existing admins can read admin list
+      allow read: if isAdmin();
+      
+      // No one can create, update, or delete admins through client
+      // These must be managed through Firebase Console or Admin SDK
+      allow create, update, delete: if false;
+    }
+    
+    // Audit logs (track sensitive operations)
+    match /auditLogs/{logId} {
+      // System can create logs
+      allow create: if true;
+      
+      // Only admins can read logs
+      allow read: if isAdmin();
+      
+      // No updates or deletes
+      allow update, delete: if false;
+    }
+    
+    // Email queue (for sending confirmation emails)
+    match /emailQueue/{emailId} {
+      // Allow creation for application confirmations
+      allow create: if request.resource.data.keys().hasAll([
+        'to',
+        'template',
+        'data',
+        'createdAt'
+      ]);
+      
+      // Only system can read/update/delete
+      allow read, update, delete: if false;
+    }
+    
+    // Deny all other paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
