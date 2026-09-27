@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-interface ProgressBarProps {
+export interface ProgressBarProps {
   value: number;
   max?: number;
   className?: string;
@@ -16,23 +16,23 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   showLabel = true,
   label,
 }) => {
-  const percentage = Math.min((value / max) * 100, 100);
+  const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
 
   return (
     <div className={cn('w-full', className)}>
       {showLabel && (
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-nabat-neutral-700">
+          <span className="text-xs sm:text-sm font-semibold text-nabat-neutral-700">
             {label || 'Progress'}
           </span>
-          <span className="text-sm font-semibold text-nabat-primary-600">
+          <span className="text-xs sm:text-sm font-bold text-nabat-primary-700">
             {Math.round(percentage)}%
           </span>
         </div>
       )}
-      <div className="progress-bar">
+      <div className="w-full h-2.5 bg-nabat-neutral-200 rounded-full overflow-hidden shadow-inner">
         <div
-          className="progress-fill"
+          className="h-full bg-gradient-to-r from-nabat-forest-600 to-nabat-primary-500 rounded-full transition-all duration-500 ease-out"
           style={{ width: `${percentage}%` }}
           role="progressbar"
           aria-valuenow={value}

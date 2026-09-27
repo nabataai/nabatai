@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { APPLICATION_STATUS_LABELS, type ApplicationStatus } from '@/types/application';
+import { cn } from '@/lib/utils';
 
 // Mock data - in production, this would come from Firebase
 const mockApplications = [
@@ -57,12 +57,11 @@ const mockApplications = [
 export default function AdminDashboard() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [applications, setApplications] = useState(mockApplications);
+  const [applications] = useState(mockApplications);
   const [filterStatus, setFilterStatus] = useState<ApplicationStatus | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    // Check authentication
     const isAuth = localStorage.getItem('admin_authenticated') === 'true';
     if (!isAuth) {
       router.push('/admin/login');
@@ -109,145 +108,232 @@ export default function AdminDashboard() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-nabat-neutral-50">
         <div className="spinner" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-nabat-neutral-50">
+    <div className="min-h-screen bg-nabat-neutral-50 flex flex-col font-sans">
       {/* Header */}
-      <header className="bg-white border-b border-nabat-neutral-200 sticky top-0 z-50">
-        <div className="container-nabat py-4">
+      <header className="bg-white/90 backdrop-blur-md border-b border-nabat-neutral-200/80 sticky top-0 z-50 shadow-xs">
+        <div className="container-nabat py-3.5 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
               <Link href="/">
                 <Image
-                  src="/nabat-logo.jpeg"
+                  src="/nabat.jpeg"
                   alt="Nabat AI"
-                  width={150}
-                  height={40}
-                  className="h-10 w-auto"
+                  width={160}
+                  height={36}
+                  className="h-8 sm:h-9 w-auto object-contain"
                   priority
                 />
               </Link>
-              <div className="hidden sm:block">
-                <h1 className="text-lg font-bold text-nabat-neutral-900">
-                  Admin Dashboard
+              <div className="hidden sm:block border-l border-nabat-neutral-200 pl-6">
+                <h1 className="text-base font-bold text-nabat-neutral-900 leading-tight">
+                  Recruitment Dashboard
                 </h1>
-                <p className="text-sm text-nabat-neutral-600">
-                  Recruitment Management
+                <p className="text-xs text-nabat-neutral-500">
+                  Director of Business Development Pipeline
                 </p>
               </div>
             </div>
-            <Button variant="ghost" onClick={handleLogout}>
-              Logout
-            </Button>
+            <div className="flex items-center space-x-3">
+              <Button
+                href="/"
+                variant="ghost"
+                size="sm"
+                className="text-xs font-semibold text-nabat-neutral-600"
+              >
+                View Careers Page
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                className="text-xs font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-200"
+              >
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="container-nabat py-8">
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-          <Card className="bg-nabat-gradient text-white">
-            <CardContent className="pt-6">
-              <p className="text-sm opacity-90 mb-1">Total</p>
-              <p className="text-3xl font-bold">{counts.total}</p>
-            </CardContent>
-          </Card>
+      <main className="container-nabat py-8 flex-1">
+        {/* Statistics Metric Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-8">
+          <button
+            onClick={() => setFilterStatus('all')}
+            className={cn(
+              'p-4 sm:p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer shadow-xs',
+              filterStatus === 'all'
+                ? 'bg-gradient-to-br from-nabat-primary-600 to-nabat-forest-700 text-white ring-2 ring-nabat-primary-500 shadow-nabat-sm'
+                : 'bg-white border border-nabat-neutral-200/90 text-nabat-neutral-800 hover:border-nabat-primary-300'
+            )}
+          >
+            <p className={cn('text-xs font-semibold uppercase tracking-wider mb-1', filterStatus === 'all' ? 'text-nabat-primary-100' : 'text-nabat-neutral-500')}>
+              All Total
+            </p>
+            <p className="text-2xl sm:text-3xl font-extrabold">{counts.total}</p>
+          </button>
 
-          <Card hover className="cursor-pointer" onClick={() => setFilterStatus('new')}>
-            <CardContent className="pt-6">
-              <p className="text-sm text-nabat-neutral-600 mb-1">New</p>
-              <p className="text-3xl font-bold text-nabat-primary-600">{counts.new}</p>
-            </CardContent>
-          </Card>
+          <button
+            onClick={() => setFilterStatus('new')}
+            className={cn(
+              'p-4 sm:p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer shadow-xs',
+              filterStatus === 'new'
+                ? 'bg-nabat-primary-500 text-white ring-2 ring-nabat-primary-300 shadow-nabat-sm'
+                : 'bg-white border border-nabat-neutral-200/90 text-nabat-neutral-800 hover:border-nabat-primary-300'
+            )}
+          >
+            <p className={cn('text-xs font-semibold uppercase tracking-wider mb-1', filterStatus === 'new' ? 'text-nabat-primary-100' : 'text-nabat-neutral-500')}>
+              New
+            </p>
+            <p className={cn('text-2xl sm:text-3xl font-extrabold', filterStatus === 'new' ? 'text-white' : 'text-nabat-primary-600')}>
+              {counts.new}
+            </p>
+          </button>
 
-          <Card hover className="cursor-pointer" onClick={() => setFilterStatus('in-review')}>
-            <CardContent className="pt-6">
-              <p className="text-sm text-nabat-neutral-600 mb-1">In Review</p>
-              <p className="text-3xl font-bold text-blue-600">{counts['in-review']}</p>
-            </CardContent>
-          </Card>
+          <button
+            onClick={() => setFilterStatus('in-review')}
+            className={cn(
+              'p-4 sm:p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer shadow-xs',
+              filterStatus === 'in-review'
+                ? 'bg-amber-600 text-white ring-2 ring-amber-300 shadow-nabat-sm'
+                : 'bg-white border border-nabat-neutral-200/90 text-nabat-neutral-800 hover:border-amber-300'
+            )}
+          >
+            <p className={cn('text-xs font-semibold uppercase tracking-wider mb-1', filterStatus === 'in-review' ? 'text-amber-100' : 'text-nabat-neutral-500')}>
+              In Review
+            </p>
+            <p className={cn('text-2xl sm:text-3xl font-extrabold', filterStatus === 'in-review' ? 'text-white' : 'text-amber-600')}>
+              {counts['in-review']}
+            </p>
+          </button>
 
-          <Card hover className="cursor-pointer" onClick={() => setFilterStatus('shortlisted')}>
-            <CardContent className="pt-6">
-              <p className="text-sm text-nabat-neutral-600 mb-1">Shortlisted</p>
-              <p className="text-3xl font-bold text-nabat-accent-600">{counts.shortlisted}</p>
-            </CardContent>
-          </Card>
+          <button
+            onClick={() => setFilterStatus('shortlisted')}
+            className={cn(
+              'p-4 sm:p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer shadow-xs',
+              filterStatus === 'shortlisted'
+                ? 'bg-nabat-forest-700 text-white ring-2 ring-nabat-forest-400 shadow-nabat-sm'
+                : 'bg-white border border-nabat-neutral-200/90 text-nabat-neutral-800 hover:border-nabat-forest-300'
+            )}
+          >
+            <p className={cn('text-xs font-semibold uppercase tracking-wider mb-1', filterStatus === 'shortlisted' ? 'text-nabat-forest-100' : 'text-nabat-neutral-500')}>
+              Shortlisted
+            </p>
+            <p className={cn('text-2xl sm:text-3xl font-extrabold', filterStatus === 'shortlisted' ? 'text-white' : 'text-nabat-forest-600')}>
+              {counts.shortlisted}
+            </p>
+          </button>
 
-          <Card hover className="cursor-pointer" onClick={() => setFilterStatus('interview')}>
-            <CardContent className="pt-6">
-              <p className="text-sm text-nabat-neutral-600 mb-1">Interview</p>
-              <p className="text-3xl font-bold text-purple-600">{counts.interview}</p>
-            </CardContent>
-          </Card>
+          <button
+            onClick={() => setFilterStatus('interview')}
+            className={cn(
+              'p-4 sm:p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer shadow-xs',
+              filterStatus === 'interview'
+                ? 'bg-purple-600 text-white ring-2 ring-purple-300 shadow-nabat-sm'
+                : 'bg-white border border-nabat-neutral-200/90 text-nabat-neutral-800 hover:border-purple-300'
+            )}
+          >
+            <p className={cn('text-xs font-semibold uppercase tracking-wider mb-1', filterStatus === 'interview' ? 'text-purple-100' : 'text-nabat-neutral-500')}>
+              Interview
+            </p>
+            <p className={cn('text-2xl sm:text-3xl font-extrabold', filterStatus === 'interview' ? 'text-white' : 'text-purple-600')}>
+              {counts.interview}
+            </p>
+          </button>
 
-          <Card hover className="cursor-pointer" onClick={() => setFilterStatus('hired')}>
-            <CardContent className="pt-6">
-              <p className="text-sm text-nabat-neutral-600 mb-1">Hired</p>
-              <p className="text-3xl font-bold text-green-600">{counts.hired}</p>
-            </CardContent>
-          </Card>
+          <button
+            onClick={() => setFilterStatus('hired')}
+            className={cn(
+              'p-4 sm:p-5 rounded-2xl text-left transition-all duration-200 cursor-pointer shadow-xs',
+              filterStatus === 'hired'
+                ? 'bg-emerald-700 text-white ring-2 ring-emerald-400 shadow-nabat-sm'
+                : 'bg-white border border-nabat-neutral-200/90 text-nabat-neutral-800 hover:border-emerald-300'
+            )}
+          >
+            <p className={cn('text-xs font-semibold uppercase tracking-wider mb-1', filterStatus === 'hired' ? 'text-emerald-100' : 'text-nabat-neutral-500')}>
+              Hired
+            </p>
+            <p className={cn('text-2xl sm:text-3xl font-extrabold', filterStatus === 'hired' ? 'text-white' : 'text-emerald-600')}>
+              {counts.hired}
+            </p>
+          </button>
         </div>
 
-        {/* Filters and Search */}
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <input
-                  type="search"
-                  placeholder="Search by name, email, or application number..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="input-field"
-                />
+        {/* Search & Filter Bar */}
+        <div className="bg-white rounded-2xl border border-nabat-neutral-200/90 p-4 sm:p-5 shadow-xs mb-6">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="w-full md:w-96 relative">
+              <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-nabat-neutral-400">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
               </div>
-              <div className="flex gap-2 flex-wrap">
-                <button
-                  onClick={() => setFilterStatus('all')}
-                  className={`px-4 py-2 rounded-nabat-md text-sm font-medium transition-all ${
-                    filterStatus === 'all'
-                      ? 'bg-nabat-primary-500 text-white'
-                      : 'bg-nabat-neutral-200 text-nabat-neutral-700 hover:bg-nabat-neutral-300'
-                  }`}
-                >
-                  All
-                </button>
-                {Object.keys(APPLICATION_STATUS_LABELS).map((status) => (
-                  <button
-                    key={status}
-                    onClick={() => setFilterStatus(status as ApplicationStatus)}
-                    className={`px-4 py-2 rounded-nabat-md text-sm font-medium transition-all ${
-                      filterStatus === status
-                        ? 'bg-nabat-primary-500 text-white'
-                        : 'bg-nabat-neutral-200 text-nabat-neutral-700 hover:bg-nabat-neutral-300'
-                    }`}
-                  >
-                    {APPLICATION_STATUS_LABELS[status as ApplicationStatus]}
-                  </button>
-                ))}
-              </div>
+              <input
+                type="search"
+                placeholder="Search candidates by name, email, or #..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="input-field pl-10"
+              />
             </div>
-          </CardContent>
-        </Card>
+            <div className="flex gap-1.5 flex-wrap w-full md:w-auto">
+              <button
+                onClick={() => setFilterStatus('all')}
+                className={cn(
+                  'px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer',
+                  filterStatus === 'all'
+                    ? 'bg-nabat-primary-500 text-white shadow-xs'
+                    : 'bg-nabat-neutral-100 text-nabat-neutral-700 hover:bg-nabat-neutral-200'
+                )}
+              >
+                All ({counts.total})
+              </button>
+              {(Object.keys(APPLICATION_STATUS_LABELS) as ApplicationStatus[]).map((status) => (
+                <button
+                  key={status}
+                  onClick={() => setFilterStatus(status)}
+                  className={cn(
+                    'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer',
+                    filterStatus === status
+                      ? 'bg-nabat-primary-500 text-white shadow-xs'
+                      : 'bg-nabat-neutral-100 text-nabat-neutral-700 hover:bg-nabat-neutral-200'
+                  )}
+                >
+                  {APPLICATION_STATUS_LABELS[status]} ({counts[status] || 0})
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
-        {/* Applications List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              Applications ({filteredApplications.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        {/* Candidate List */}
+        <div className="bg-white rounded-2xl border border-nabat-neutral-200/90 shadow-nabat-card overflow-hidden">
+          <div className="px-6 py-4 border-b border-nabat-neutral-100 flex items-center justify-between">
+            <h3 className="font-bold text-nabat-neutral-900 text-base">
+              Candidate Dossiers ({filteredApplications.length})
+            </h3>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="text-xs text-nabat-primary-600 hover:underline cursor-pointer"
+              >
+                Clear search
+              </button>
+            )}
+          </div>
+
+          <div className="divide-y divide-nabat-neutral-100">
             {filteredApplications.length === 0 ? (
-              <div className="text-center py-12">
+              <div className="text-center py-16">
                 <svg
-                  className="w-16 h-16 text-nabat-neutral-400 mx-auto mb-4"
+                  className="w-12 h-12 text-nabat-neutral-300 mx-auto mb-3"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -255,108 +341,82 @@ export default function AdminDashboard() {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                   />
                 </svg>
-                <p className="text-nabat-neutral-600">No applications found</p>
+                <p className="text-sm font-semibold text-nabat-neutral-700">No applications match your criteria</p>
+                <p className="text-xs text-nabat-neutral-500 mt-1">Try resetting the filter or search query</p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {filteredApplications.map((app) => (
-                  <div
-                    key={app.id}
-                    className="card p-4 hover:shadow-nabat-md transition-shadow cursor-pointer"
-                    onClick={() => router.push(`/admin/applications/${app.id}`)}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-semibold text-nabat-neutral-900 text-lg">
-                            {app.name}
-                          </h3>
-                          <span className={`badge ${
-                            app.status === 'new' ? 'badge-info' :
-                            app.status === 'in-review' ? 'badge-warning' :
-                            app.status === 'shortlisted' ? 'badge-success' :
-                            'badge-info'
-                          }`}>
-                            {APPLICATION_STATUS_LABELS[app.status]}
-                          </span>
-                          {app.hasUAEExperience && (
-                            <span className="badge badge-success text-xs">
-                              UAE Experience
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
-                          <div>
-                            <p className="text-nabat-neutral-600">Position</p>
-                            <p className="font-medium text-nabat-neutral-900">
-                              {app.currentPosition}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-nabat-neutral-600">Company</p>
-                            <p className="font-medium text-nabat-neutral-900">
-                              {app.currentCompany}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-nabat-neutral-600">Experience</p>
-                            <p className="font-medium text-nabat-neutral-900">
-                              {app.yearsOfExperience}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-nabat-neutral-600">Application #</p>
-                            <p className="font-mono text-sm font-medium text-nabat-primary-600">
-                              {app.applicationNumber}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="mt-3 flex items-center gap-4 text-xs text-nabat-neutral-500">
-                          <span className="flex items-center gap-1">
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                            </svg>
-                            {app.email}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                            </svg>
-                            {app.phone}
-                          </span>
-                          <span>
-                            Submitted: {new Date(app.submittedAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-
-                      <svg
-                        className="w-6 h-6 text-nabat-neutral-400 flex-shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+              filteredApplications.map((app) => (
+                <div
+                  key={app.id}
+                  className="p-5 sm:p-6 hover:bg-nabat-primary-50/30 transition-colors cursor-pointer group flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  onClick={() => router.push(`/admin/applications/${app.id}`)}
+                >
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-2.5 mb-2">
+                      <h4 className="font-bold text-nabat-neutral-900 text-base sm:text-lg group-hover:text-nabat-primary-700 transition-colors">
+                        {app.name}
+                      </h4>
+                      <span
+                        className={cn(
+                          'badge text-xs font-semibold',
+                          app.status === 'new' && 'badge-info',
+                          app.status === 'in-review' && 'badge-warning',
+                          app.status === 'shortlisted' && 'badge-success',
+                          app.status === 'interview' && 'bg-purple-100 text-purple-800 border-purple-200',
+                          app.status === 'hired' && 'bg-emerald-100 text-emerald-800 border-emerald-200',
+                          app.status === 'rejected' && 'badge-error'
+                        )}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
+                        {APPLICATION_STATUS_LABELS[app.status]}
+                      </span>
+                      {app.hasUAEExperience && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-nabat-forest-50 text-nabat-forest-700 border border-nabat-forest-200">
+                          UAE Experience
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs sm:text-sm text-nabat-neutral-600 mb-2">
+                      <div>
+                        <span className="text-nabat-neutral-400 block text-xs">Role:</span>
+                        <span className="font-medium text-nabat-neutral-900">{app.currentPosition}</span>
+                      </div>
+                      <div>
+                        <span className="text-nabat-neutral-400 block text-xs">Company:</span>
+                        <span className="font-medium text-nabat-neutral-900">{app.currentCompany}</span>
+                      </div>
+                      <div>
+                        <span className="text-nabat-neutral-400 block text-xs">Experience:</span>
+                        <span className="font-medium text-nabat-neutral-900">{app.yearsOfExperience}</span>
+                      </div>
+                      <div>
+                        <span className="text-nabat-neutral-400 block text-xs">Application Ref:</span>
+                        <span className="font-mono font-bold text-nabat-primary-700">{app.applicationNumber}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-nabat-neutral-500 pt-1">
+                      <span>Email: <strong className="text-nabat-neutral-700">{app.email}</strong></span>
+                      <span>Phone: <strong className="text-nabat-neutral-700">{app.phone}</strong></span>
+                      <span>Submitted: {new Date(app.submittedAt).toLocaleDateString()}</span>
                     </div>
                   </div>
-                ))}
-              </div>
+
+                  <div className="flex items-center space-x-2 text-nabat-primary-600 group-hover:translate-x-1 transition-transform">
+                    <span className="text-xs sm:text-sm font-bold">Review Dossier</span>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              ))
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </main>
     </div>
   );

@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   error?: string;
   hint?: string;
@@ -28,7 +28,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     const selectId = id || `select-${Math.random().toString(36).substr(2, 9)}`;
 
     // Normalize options to always have value and label
-    const normalizedOptions = options.map(opt =>
+    const normalizedOptions = options.map((opt) =>
       typeof opt === 'string' ? { value: opt, label: opt } : opt
     );
 
@@ -40,29 +40,31 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             {required && <span className="input-required ml-1">*</span>}
           </label>
         )}
-        <select
-          ref={ref}
-          id={selectId}
-          className={cn(
-            'input-field',
-            error && 'input-error',
-            className
-          )}
-          aria-invalid={error ? 'true' : 'false'}
-          aria-describedby={error ? `${selectId}-error` : hint ? `${selectId}-hint` : undefined}
-          {...props}
-        >
-          {placeholder && (
-            <option value="" disabled>
-              {placeholder}
-            </option>
-          )}
-          {normalizedOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            ref={ref}
+            id={selectId}
+            className={cn(
+              'input-field',
+              error && 'input-error',
+              className
+            )}
+            aria-invalid={error ? 'true' : 'false'}
+            aria-describedby={error ? `${selectId}-error` : hint ? `${selectId}-hint` : undefined}
+            {...props}
+          >
+            {placeholder && (
+              <option value="" disabled>
+                {placeholder}
+              </option>
+            )}
+            {normalizedOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
         {error && (
           <p id={`${selectId}-error`} className="input-error-message" role="alert">
             {error}

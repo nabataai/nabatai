@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   hint?: string;
@@ -37,7 +37,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
         <div className="relative">
           {leftIcon && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-nabat-neutral-500">
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-nabat-neutral-400 pointer-events-none flex items-center justify-center">
               {leftIcon}
             </div>
           )}
@@ -46,9 +46,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             className={cn(
               'input-field',
+              leftIcon && 'pl-11',
+              rightIcon && 'pr-11',
               error && 'input-error',
-              leftIcon && 'pl-10',
-              rightIcon && 'pr-10',
               className
             )}
             aria-invalid={error ? 'true' : 'false'}
@@ -56,7 +56,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {rightIcon && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-nabat-neutral-500">
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-nabat-neutral-400 flex items-center justify-center">
               {rightIcon}
             </div>
           )}

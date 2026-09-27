@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
@@ -20,10 +21,7 @@ export default function AdminLoginPage() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual Firebase authentication
-      // For now, using simple demo credentials
       if (email === 'admin@nabat.ai' && password === 'demo123') {
-        // Store auth token in localStorage (in production, use httpOnly cookies)
         localStorage.setItem('admin_authenticated', 'true');
         localStorage.setItem('admin_email', email);
         router.push('/admin/dashboard');
@@ -38,49 +36,48 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-nabat-neutral-50 via-white to-nabat-primary-50/20 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-nabat-neutral-50 via-white to-nabat-primary-50/30 flex flex-col items-center justify-center p-4">
+      {/* Back Link */}
+      <div className="w-full max-w-md mb-4 text-left">
+        <Link
+          href="/"
+          className="inline-flex items-center text-xs font-semibold text-nabat-neutral-500 hover:text-nabat-primary-700 transition-colors"
+        >
+          ← Return to Careers Portal
+        </Link>
+      </div>
+
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
           <Image
-            src="/nabat-logo.jpeg"
+            src="/nabat.jpeg"
             alt="Nabat AI"
             width={180}
-            height={48}
-            className="h-12 w-auto mx-auto mb-4"
+            height={40}
+            className="h-10 w-auto mx-auto mb-4 object-contain"
             priority
           />
-          <h1 className="text-2xl font-bold text-nabat-neutral-900 mb-2">
-            Admin Portal
+          <h1 className="text-2xl font-extrabold text-nabat-neutral-900 tracking-tight">
+            Talent Acquisition Portal
           </h1>
-          <p className="text-nabat-neutral-600">
-            Recruitment Management System
+          <p className="text-sm text-nabat-neutral-600 mt-1">
+            Executive Recruitment Management
           </p>
         </div>
 
         {/* Login Card */}
-        <Card>
+        <Card className="shadow-nabat-card border-nabat-neutral-200/90">
           <CardHeader>
-            <CardTitle>Sign In</CardTitle>
+            <CardTitle className="text-xl">Sign In</CardTitle>
             <CardDescription>
-              Access the recruitment dashboard
+              Access candidate dossiers and pipeline metrics
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleLogin} className="space-y-6">
+            <form onSubmit={handleLogin} className="space-y-5">
               {error && (
-                <div className="alert alert-error">
-                  <svg
-                    className="w-5 h-5 inline-block mr-2"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                <div className="alert alert-error text-sm font-medium">
                   {error}
                 </div>
               )}
@@ -101,24 +98,24 @@ export default function AdminLoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
+                placeholder="Enter password"
                 autoComplete="current-password"
               />
 
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full font-bold shadow-nabat-sm"
                 isLoading={isLoading}
               >
-                Sign In
+                Sign In to Dashboard →
               </Button>
 
               {/* Demo Credentials Info */}
-              <div className="mt-4 p-3 bg-blue-50 rounded-nabat-md border border-blue-200">
-                <p className="text-xs font-medium text-blue-900 mb-1">
-                  Demo Credentials
+              <div className="mt-4 p-3.5 bg-nabat-primary-50/70 rounded-xl border border-nabat-primary-200/70">
+                <p className="text-xs font-bold text-nabat-forest-900 mb-1">
+                  Demo Evaluation Credentials
                 </p>
-                <p className="text-xs text-blue-700">
+                <p className="text-xs text-nabat-forest-700 font-mono">
                   Email: admin@nabat.ai<br />
                   Password: demo123
                 </p>
@@ -130,7 +127,7 @@ export default function AdminLoginPage() {
         {/* Security Notice */}
         <div className="mt-6 text-center">
           <p className="text-xs text-nabat-neutral-500">
-            This is a secure admin area. All access is logged and monitored.
+            Nabat AI Executive Portal • All sessions are monitored
           </p>
         </div>
       </div>

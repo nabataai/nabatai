@@ -39,15 +39,15 @@ export const ApplicationForm: React.FC = () => {
   return (
     <div className="container-nabat form-container">
       {/* Step Indicator */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <StepIndicator steps={STEPS} currentStep={currentStep} />
       </div>
 
       {/* Auto-save Indicator */}
-      <div className="mb-6 text-center">
-        <p className="text-sm text-nabat-neutral-600">
+      <div className="mb-6 flex items-center justify-center">
+        <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-nabat-forest-50 text-nabat-forest-800 border border-nabat-forest-200/80 shadow-xs">
           <svg
-            className="inline-block w-4 h-4 mr-2"
+            className="w-3.5 h-3.5 text-nabat-forest-600"
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -58,7 +58,7 @@ export const ApplicationForm: React.FC = () => {
             />
           </svg>
           Your progress is automatically saved
-        </p>
+        </span>
       </div>
 
       {/* Form Steps */}
@@ -90,12 +90,12 @@ export const ApplicationForm: React.FC = () => {
       </div>
 
       {/* Help Text */}
-      <div className="mt-8 p-4 bg-nabat-primary-50 rounded-nabat-md border border-nabat-primary-200 text-center">
+      <div className="mt-10 p-5 bg-gradient-to-r from-nabat-primary-50/60 via-white to-nabat-accent-50/40 rounded-2xl border border-nabat-primary-100 shadow-xs text-center">
         <p className="text-sm text-nabat-neutral-700">
-          Need help? Contact us at{' '}
+          Need assistance with your application? Contact our executive recruitment team at{' '}
           <a
             href="mailto:careers@nabat.ai"
-            className="link-primary"
+            className="font-semibold text-nabat-primary-700 hover:text-nabat-forest-700 underline decoration-nabat-primary-300 underline-offset-2 transition-colors"
           >
             careers@nabat.ai
           </a>

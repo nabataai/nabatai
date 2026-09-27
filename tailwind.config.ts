@@ -92,7 +92,7 @@ const config: Config = {
       backgroundImage: {
         'nabat-gradient': 'linear-gradient(135deg, #38b29a 0%, #2f7655 100%)',
         'nabat-gradient-subtle': 'linear-gradient(135deg, #e6f5f3 0%, #f0faf7 100%)',
-        'topographic': "url('/nabat-logo.jpeg')",
+        'topographic': "url('/nabat.jpeg')",
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',

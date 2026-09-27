@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
   hint?: string;
@@ -26,18 +26,18 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     ref
   ) => {
     const textareaId = id || `textarea-${Math.random().toString(36).substr(2, 9)}`;
-    const currentLength = value ? String(value).length : 0;
+    const currentLength = value !== undefined && value !== null ? String(value).length : 0;
 
     return (
       <div className="w-full">
         {label && (
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-1.5">
             <label htmlFor={textareaId} className="input-label mb-0">
               {label}
               {required && <span className="input-required ml-1">*</span>}
             </label>
             {showCharCount && maxLength && (
-              <span className="text-sm text-nabat-neutral-500">
+              <span className="text-xs font-medium text-nabat-neutral-500">
                 {currentLength} / {maxLength}
               </span>
             )}
@@ -49,7 +49,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           maxLength={maxLength}
           value={value}
           className={cn(
-            'input-field',
+            'input-field min-h-[120px]',
             error && 'input-error',
             className
           )}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   hover?: boolean;
 }
 
@@ -10,7 +10,11 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
     return (
       <div
         ref={ref}
-        className={cn('card', hover && 'card-hover', className)}
+        className={cn(
+          'bg-white rounded-nabat-lg border border-nabat-neutral-200/90 shadow-nabat-card p-6 sm:p-7 transition-all duration-200',
+          hover && 'hover:shadow-nabat-md hover:border-nabat-primary-300 hover:-translate-y-0.5',
+          className
+        )}
         {...props}
       >
         {children}
@@ -21,12 +25,12 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
 
 Card.displayName = 'Card';
 
-interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type CardHeaderProps = React.HTMLAttributes<HTMLDivElement>;
 
 export const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ children, className, ...props }, ref) => {
     return (
-      <div ref={ref} className={cn('mb-4', className)} {...props}>
+      <div ref={ref} className={cn('mb-6', className)} {...props}>
         {children}
       </div>
     );
@@ -35,14 +39,14 @@ export const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
 
 CardHeader.displayName = 'CardHeader';
 
-interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {}
+export type CardTitleProps = React.HTMLAttributes<HTMLHeadingElement>;
 
 export const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
   ({ children, className, ...props }, ref) => {
     return (
       <h3
         ref={ref}
-        className={cn('text-xl font-bold text-nabat-neutral-900', className)}
+        className={cn('text-xl sm:text-2xl font-bold text-nabat-neutral-900 tracking-tight', className)}
         {...props}
       >
         {children}
@@ -53,14 +57,14 @@ export const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
 
 CardTitle.displayName = 'CardTitle';
 
-interface CardDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {}
+export type CardDescriptionProps = React.HTMLAttributes<HTMLParagraphElement>;
 
 export const CardDescription = React.forwardRef<HTMLParagraphElement, CardDescriptionProps>(
   ({ children, className, ...props }, ref) => {
     return (
       <p
         ref={ref}
-        className={cn('text-sm text-nabat-neutral-600 mt-1', className)}
+        className={cn('text-sm text-nabat-neutral-600 mt-1.5 leading-relaxed', className)}
         {...props}
       >
         {children}
@@ -71,12 +75,12 @@ export const CardDescription = React.forwardRef<HTMLParagraphElement, CardDescri
 
 CardDescription.displayName = 'CardDescription';
 
-interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type CardContentProps = React.HTMLAttributes<HTMLDivElement>;
 
 export const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
   ({ children, className, ...props }, ref) => {
     return (
-      <div ref={ref} className={cn(className)} {...props}>
+      <div ref={ref} className={cn('w-full', className)} {...props}>
         {children}
       </div>
     );
@@ -85,14 +89,14 @@ export const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
 
 CardContent.displayName = 'CardContent';
 
-interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type CardFooterProps = React.HTMLAttributes<HTMLDivElement>;
 
 export const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
   ({ children, className, ...props }, ref) => {
     return (
       <div
         ref={ref}
-        className={cn('mt-6 pt-6 border-t border-nabat-neutral-200', className)}
+        className={cn('mt-6 pt-6 border-t border-nabat-neutral-200/80 flex items-center justify-between', className)}
         {...props}
       >
         {children}
