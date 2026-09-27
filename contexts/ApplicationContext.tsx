@@ -86,13 +86,24 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
   }, [applicationData, currentStep, saveToLocalStorage]);
 
   const updateApplicationData = useCallback((step: keyof ApplicationData, data: any) => {
-    setApplicationData((prev) => ({
-      ...prev,
-      [step]: {
-        ...prev[step],
-        ...data,
-      },
-    }));
+    setApplicationData((prev) => {
+      // Handle currentStep separately since it's not an object
+      if (step === 'currentStep' || step === 'lastSaved') {
+        return {
+          ...prev,
+          [step]: data,
+        };
+      }
+      
+      // For all other steps, merge with existing data
+      return {
+        ...prev,
+        [step]: {
+          ...(prev[step] as object),
+          ...data,
+        },
+      };
+    });
   }, []);
 
   const clearLocalStorage = useCallback(() => {
