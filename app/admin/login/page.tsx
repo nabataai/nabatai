@@ -88,7 +88,7 @@ export default function AdminLoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@nabat.ai"
+                placeholder="Enter your email"
                 autoComplete="email"
               />
 
@@ -110,16 +110,7 @@ export default function AdminLoginPage() {
                 Sign In to Dashboard →
               </Button>
 
-              {/* Demo Credentials Info */}
-              <div className="mt-4 p-3.5 bg-nabat-primary-50/70 rounded-xl border border-nabat-primary-200/70">
-                <p className="text-xs font-bold text-nabat-forest-900 mb-1">
-                  Demo Evaluation Credentials
-                </p>
-                <p className="text-xs text-nabat-forest-700 font-mono">
-                  Email: admin@nabat.ai<br />
-                  Password: demo123
-                </p>
-              </div>
+
             </form>
           </CardContent>
         </Card>

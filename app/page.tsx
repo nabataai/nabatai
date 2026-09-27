@@ -404,12 +404,7 @@ export default function Home() {
               >
                 Privacy Policy
               </Link>
-              <Link
-                href="/admin/login"
-                className="hover:text-nabat-accent-400 transition-colors"
-              >
-                Admin Portal
-              </Link>
+
               <span className="text-nabat-neutral-600">|</span>
               <span className="text-nabat-neutral-500">© 2026 Nabat AI • Abu Dhabi, UAE</span>
             </div>
