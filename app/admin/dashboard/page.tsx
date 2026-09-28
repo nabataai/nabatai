@@ -8,56 +8,46 @@ import { Button } from '@/components/ui/Button';
 import { APPLICATION_STATUS_LABELS, type ApplicationStatus } from '@/types/application';
 import { cn } from '@/lib/utils';
 
-// Mock data - in production, this would come from Firebase
-const mockApplications = [
-  {
-    id: '1',
-    applicationNumber: 'NAB-ABC123',
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '+971 50 123 4567',
-    currentPosition: 'VP of Business Development',
-    currentCompany: 'Tech Corp',
-    yearsOfExperience: '15-20 years',
-    hasUAEExperience: true,
-    hasGCCExperience: true,
-    status: 'new' as ApplicationStatus,
-    submittedAt: '2026-09-25T10:30:00',
-  },
-  {
-    id: '2',
-    applicationNumber: 'NAB-XYZ789',
-    name: 'Sarah Smith',
-    email: 'sarah.smith@example.com',
-    phone: '+971 55 987 6543',
-    currentPosition: 'Director of Partnerships',
-    currentCompany: 'Climate Solutions Inc',
-    yearsOfExperience: '10-15 years',
-    hasUAEExperience: false,
-    hasGCCExperience: true,
-    status: 'in-review' as ApplicationStatus,
-    submittedAt: '2026-09-24T14:15:00',
-  },
-  {
-    id: '3',
-    applicationNumber: 'NAB-DEF456',
-    name: 'Ahmed Al-Mansoori',
-    email: 'ahmed.m@example.com',
-    phone: '+971 50 555 1234',
-    currentPosition: 'Head of Business Development',
-    currentCompany: 'GCC Energy Solutions',
-    yearsOfExperience: '10-15 years',
-    hasUAEExperience: true,
-    hasGCCExperience: true,
-    status: 'shortlisted' as ApplicationStatus,
-    submittedAt: '2026-09-23T09:45:00',
-  },
-];
+interface AppRow {
+  id: string;
+  applicationNumber: string;
+  status: ApplicationStatus;
+  submittedAt: string;
+  name: string;
+  email: string;
+  phone: string;
+  currentPosition: string;
+  currentCompany: string;
+  yearsOfExperience: string;
+  hasUAEExperience: boolean;
+  data?: any;
+}
+
+function mapApplication(raw: any): AppRow {
+  const pi = raw.data?.personalInformation || {};
+  const prof = raw.data?.professionalInformation || {};
+  const gcc = raw.data?.gccUaeExperience || {};
+  return {
+    id: raw.id,
+    applicationNumber: raw.applicationNumber,
+    status: raw.status,
+    submittedAt: raw.submittedAt,
+    name: [pi.firstName, pi.lastName].filter(Boolean).join(' ') || '—',
+    email: pi.email || '—',
+    phone: pi.primaryPhone || '—',
+    currentPosition: prof.currentJobTitle || '—',
+    currentCompany: prof.currentCompany || '—',
+    yearsOfExperience: prof.yearsOfExperience || '—',
+    hasUAEExperience: !!gcc.hasUAEExperience,
+    data: raw,
+  };
+}
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [applications] = useState(mockApplications);
+  const [applications, setApplications] = useState<AppRow[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<ApplicationStatus | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -65,10 +55,24 @@ export default function AdminDashboard() {
     const isAuth = localStorage.getItem('admin_authenticated') === 'true';
     if (!isAuth) {
       router.push('/admin/login');
-    } else {
-      setIsAuthenticated(true);
+      return;
     }
+    setIsAuthenticated(true);
+    fetchApplications();
   }, [router]);
+
+  const fetchApplications = async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch('/api/applications');
+      const json = await res.json();
+      setApplications((json.applications || []).map(mapApplication));
+    } catch (err) {
+      console.error('Failed to load applications', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('admin_authenticated');
@@ -86,11 +90,9 @@ export default function AdminDashboard() {
       rejected: 0,
       hired: 0,
     };
-
     applications.forEach((app) => {
       counts[app.status] = (counts[app.status] || 0) + 1;
     });
-
     return counts;
   };
 
@@ -141,6 +143,14 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div className="flex items-center space-x-3">
+              <Button
+                onClick={fetchApplications}
+                variant="ghost"
+                size="sm"
+                className="text-xs font-semibold text-nabat-neutral-600"
+              >
+                ↻ Refresh
+              </Button>
               <Button
                 href="/"
                 variant="ghost"
@@ -330,7 +340,12 @@ export default function AdminDashboard() {
           </div>
 
           <div className="divide-y divide-nabat-neutral-100">
-            {filteredApplications.length === 0 ? (
+            {isLoading ? (
+              <div className="text-center py-16">
+                <div className="spinner mx-auto mb-3" />
+                <p className="text-sm text-nabat-neutral-500">Loading applications...</p>
+              </div>
+            ) : filteredApplications.length === 0 ? (
               <div className="text-center py-16">
                 <svg
                   className="w-12 h-12 text-nabat-neutral-300 mx-auto mb-3"
@@ -345,8 +360,12 @@ export default function AdminDashboard() {
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                   />
                 </svg>
-                <p className="text-sm font-semibold text-nabat-neutral-700">No applications match your criteria</p>
-                <p className="text-xs text-nabat-neutral-500 mt-1">Try resetting the filter or search query</p>
+                <p className="text-sm font-semibold text-nabat-neutral-700">
+                  {applications.length === 0 ? 'No applications submitted yet' : 'No applications match your criteria'}
+                </p>
+                <p className="text-xs text-nabat-neutral-500 mt-1">
+                  {applications.length === 0 ? 'Applications will appear here once candidates submit' : 'Try resetting the filter or search query'}
+                </p>
               </div>
             ) : (
               filteredApplications.map((app) => (

@@ -91,3 +91,7 @@ out
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+# Local application data
+/data/*.json
+/uploads/

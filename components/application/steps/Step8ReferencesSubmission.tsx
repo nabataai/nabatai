@@ -42,9 +42,50 @@ export const Step8ReferencesSubmission: React.FC<Step8Props> = ({ onBack }) => {
     try {
       updateApplicationData('referencesAndSubmission', data);
 
-      // TODO: Submit to Firebase/backend
-      // For now, simulate submission
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Build multipart form with all data + files
+      const formData = new FormData();
+
+      // Serialize all non-file application data
+      const appDataClone = {
+        ...applicationData,
+        referencesAndSubmission: data,
+        // remove File objects — they'll be sent separately
+        documents: {
+          cvResumeUrl: applicationData.documents.cvResumeUrl,
+          coverLetterUrl: applicationData.documents.coverLetterUrl,
+          portfolioUrl: applicationData.documents.portfolioUrl,
+          nationalIdFrontUrl: applicationData.documents.nationalIdFrontUrl,
+          nationalIdBackUrl: applicationData.documents.nationalIdBackUrl,
+          passportPageUrl: applicationData.documents.passportPageUrl,
+        },
+      };
+      formData.append('data', JSON.stringify(appDataClone));
+
+      // Attach files
+      const fileMap: Record<string, File | null | undefined> = {
+        cvResume: applicationData.documents.cvResume,
+        coverLetter: applicationData.documents.coverLetter,
+        portfolio: applicationData.documents.portfolio,
+        nationalIdFront: applicationData.documents.nationalIdFront,
+        nationalIdBack: applicationData.documents.nationalIdBack,
+        passportPage: applicationData.documents.passportPage,
+      };
+
+      for (const [key, file] of Object.entries(fileMap)) {
+        if (file instanceof File) {
+          formData.append(key, file, file.name);
+        }
+      }
+
+      const response = await fetch('/api/applications', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || 'Submission failed');
+      }
 
       // Clear local storage after successful submission
       clearLocalStorage();

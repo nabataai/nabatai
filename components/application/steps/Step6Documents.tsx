@@ -43,6 +43,21 @@ export const Step6Documents: React.FC<Step6Props> = ({ onNext, onBack }) => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
+    if (!nationalIdFront) {
+      setError('National ID / Emirates ID (Front side) is required');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    if (!nationalIdBack) {
+      setError('National ID / Emirates ID (Back side) is required');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    if (!passportPage) {
+      setError('Passport Information Page is required');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
 
     setError(null);
 
@@ -139,9 +154,9 @@ export const Step6Documents: React.FC<Step6Props> = ({ onNext, onBack }) => {
             </div>
           </div>
 
-          {/* Identity Documents */}
+          {/* Identity Documents — REQUIRED */}
           <div className="pt-6 border-t border-nabat-neutral-200">
-            <h3 className="section-subheading">Identity Documents</h3>
+            <h3 className="section-subheading">Identity Documents <span className="text-red-500">*</span></h3>
 
             <div className="mb-6 p-4 bg-blue-50 rounded-nabat-md border border-blue-200">
               <div className="flex items-start">
@@ -158,10 +173,10 @@ export const Step6Documents: React.FC<Step6Props> = ({ onNext, onBack }) => {
                 </svg>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-blue-900">
-                    Privacy Notice
+                    Required for all applicants
                   </p>
                   <p className="text-sm text-blue-700 mt-1">
-                    Please only upload identity documents if explicitly requested for recruitment or onboarding purposes. All sensitive documents are encrypted and handled according to applicable privacy and data-protection requirements.
+                    Identity documents are required as part of our recruitment process. All sensitive documents are encrypted and handled according to applicable privacy and data-protection requirements.
                   </p>
                 </div>
               </div>
@@ -169,12 +184,13 @@ export const Step6Documents: React.FC<Step6Props> = ({ onNext, onBack }) => {
 
             <div className="space-y-6">
               <div>
-                <h4 className="text-sm font-medium text-nabat-neutral-700 mb-4">
-                  National ID / Emirates ID (if applicable)
+                <h4 className="text-sm font-semibold text-nabat-neutral-700 mb-4">
+                  National ID / Emirates ID <span className="text-red-500">*</span>
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FileUpload
                     label="Front Side"
+                    required
                     accept={{
                       'image/jpeg': ['.jpg', '.jpeg'],
                       'image/png': ['.png'],
@@ -183,11 +199,12 @@ export const Step6Documents: React.FC<Step6Props> = ({ onNext, onBack }) => {
                     maxSize={5}
                     onFileSelect={setNationalIdFront}
                     currentFile={nationalIdFront}
-                    hint="Optional - JPG, PNG, or PDF (max 5MB)"
+                    hint="Required — JPG, PNG, or PDF (max 5MB)"
                   />
 
                   <FileUpload
                     label="Back Side"
+                    required
                     accept={{
                       'image/jpeg': ['.jpg', '.jpeg'],
                       'image/png': ['.png'],
@@ -196,13 +213,14 @@ export const Step6Documents: React.FC<Step6Props> = ({ onNext, onBack }) => {
                     maxSize={5}
                     onFileSelect={setNationalIdBack}
                     currentFile={nationalIdBack}
-                    hint="Optional - JPG, PNG, or PDF (max 5MB)"
+                    hint="Required — JPG, PNG, or PDF (max 5MB)"
                   />
                 </div>
               </div>
 
               <FileUpload
                 label="Passport Information Page"
+                required
                 accept={{
                   'image/jpeg': ['.jpg', '.jpeg'],
                   'image/png': ['.png'],
@@ -211,7 +229,7 @@ export const Step6Documents: React.FC<Step6Props> = ({ onNext, onBack }) => {
                 maxSize={5}
                 onFileSelect={setPassportPage}
                 currentFile={passportPage}
-                hint="Optional - Page with photo and personal details (JPG, PNG, or PDF, max 5MB)"
+                hint="Required — Page with photo and personal details (JPG, PNG, or PDF, max 5MB)"
               />
             </div>
           </div>
