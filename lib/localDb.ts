@@ -40,6 +40,22 @@ export async function updateApplication(id: string, updates: Record<string, any>
   await writeFile(DB_PATH, JSON.stringify(apps, null, 2), 'utf-8');
 }
 
+export async function clearAllApplications(): Promise<void> {
+  await ensureDb();
+  // Wipe JSON database
+  await writeFile(DB_PATH, '[]', 'utf-8');
+
+  // Delete all uploaded files
+  const { rm } = await import('fs/promises');
+  const uploadDir = path.join(process.cwd(), 'uploads');
+  try {
+    await rm(uploadDir, { recursive: true, force: true });
+  } catch {
+    // uploads folder may not exist — that's fine
+  }
+}
+
+
 export function generateApplicationNumber(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code = '';

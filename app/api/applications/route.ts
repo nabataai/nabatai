@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readApplications, saveApplication, generateApplicationNumber } from '@/lib/localDb';
+import { readApplications, saveApplication, generateApplicationNumber, clearAllApplications } from '@/lib/localDb';
 
 // GET /api/applications — list all applications (admin)
 export async function GET() {
@@ -71,5 +71,16 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error('POST /api/applications error:', err);
     return NextResponse.json({ error: 'Failed to submit application' }, { status: 500 });
+  }
+}
+
+// DELETE /api/applications — clear ALL applications and uploaded files (admin only)
+export async function DELETE() {
+  try {
+    await clearAllApplications();
+    return NextResponse.json({ success: true, message: 'All applications cleared' });
+  } catch (err) {
+    console.error('DELETE /api/applications error:', err);
+    return NextResponse.json({ error: 'Failed to clear applications' }, { status: 500 });
   }
 }

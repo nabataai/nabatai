@@ -48,6 +48,7 @@ export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [applications, setApplications] = useState<AppRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isClearing, setIsClearing] = useState(false);
   const [filterStatus, setFilterStatus] = useState<ApplicationStatus | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -78,6 +79,24 @@ export default function AdminDashboard() {
     localStorage.removeItem('admin_authenticated');
     localStorage.removeItem('admin_email');
     router.push('/admin/login');
+  };
+
+  const handleClearAll = async () => {
+    const confirmed = window.confirm(
+      '⚠️ Are you sure you want to delete ALL applications and uploaded files?\n\nThis action cannot be undone.'
+    );
+    if (!confirmed) return;
+    try {
+      setIsClearing(true);
+      const res = await fetch('/api/applications', { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed');
+      setApplications([]);
+      alert('✅ All applications have been cleared successfully.');
+    } catch (err) {
+      alert('❌ Failed to clear applications. Please try again.');
+    } finally {
+      setIsClearing(false);
+    }
   };
 
   const getStatusCounts = () => {
@@ -150,6 +169,15 @@ export default function AdminDashboard() {
                 className="text-xs font-semibold text-nabat-neutral-600"
               >
                 ↻ Refresh
+              </Button>
+              <Button
+                onClick={handleClearAll}
+                variant="outline"
+                size="sm"
+                isLoading={isClearing}
+                className="text-xs font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-300 border-red-200"
+              >
+                🗑 Clear All Data
               </Button>
               <Button
                 href="/"
